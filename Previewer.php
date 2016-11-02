@@ -10,7 +10,6 @@ class Previewer {
     private $image_size = [100, 56];
     
     private $images_link = '/images/site_previews';
-    private $default_link = '/modules/addons/sites_previewer/defaults';
     
     private $module_path;
 
@@ -94,16 +93,7 @@ class Previewer {
         for( $i=0; $i<$services_count; $i++) {
             
             if( empty($this->images[$this->services[$i]['id']]) || !file_exists($this->images[$this->services[$i]['id']]['path']) ) {
-
-                // If domain name valid for letter-named image
-                if(!empty($this->services[$i]['domain']) && strpos('abcdefghijklmopqrstuvwxyz', $this->services[$i]['domain'][0]) ) {
-                    $this->services[$i]['preview'] = sprintf('%s/%s.jpg', $this->default_link, $this->services[$i]['domain'][0]);
-                    
-                // All else fails. Flash default image
-                } else {
-                    $this->services[$i]['preview'] = sprintf('%s/default.jpg', $this->default_link);
-                }
-   
+                $this->services[$i]['preview'] = '/modules/addons/sites_previewer/src/default.jpg';
             } else {
                 $this->services[$i]['preview'] = $this->images[$this->services[$i]['id']]['link'];
             }
