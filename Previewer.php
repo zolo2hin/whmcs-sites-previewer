@@ -22,7 +22,7 @@ class Previewer {
                 $this->images[$service['id']] = $image;
             }
         }
-        
+
         $this->buildImageFiles();
 
         $this->services = $services;
@@ -110,7 +110,7 @@ class Previewer {
      */
     private function getImageDetails($service) {
 
-        if($service['domainstatus'] == 'Active' && preg_match("/^[^-\._][a-z\d_\.-]+\.[a-z]{2,6}$/i", $service['domain'])) {
+        if(!empty($service['status']) && !empty($service['domain']) && $service['status'] == 'Active' && preg_match("/^[^-\._][a-z\d_\.-]+\.[a-z]{2,6}$/i", $service['domain'])) {
             
             $imagename = md5($service['id'].$service['domain']);
             
