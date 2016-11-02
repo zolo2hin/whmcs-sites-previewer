@@ -9,7 +9,7 @@ Module builds previews of all client sites and provides their for all clientarea
 
 ## Installation
 1. Unzip the archieve and put files into /modules/addons/ folder
-2. Create /images/site_previews folder and give user permission to write in it
+2. Create /images/site_previews folder and give user permission to write into
 3. Place hook_sites_previewer.php into /includes/hooks/ to activate module logic
 
 ## Usage
