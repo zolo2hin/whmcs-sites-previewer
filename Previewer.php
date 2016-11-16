@@ -9,6 +9,8 @@ class Previewer {
     private $clip_size = [1200, 672];
     private $image_size = [100, 56];
     
+    private $image_reload_time = 604800; // One week
+    
     private $images_link = '/images/site_previews';
     
     private $module_path;
@@ -29,13 +31,16 @@ class Previewer {
     }
     
     /**
-     * 
+     * Check all images availability and create new images
      */
     private function buildImageFiles() {
 
         foreach($this->images as $image) {
-            if( !file_exists($image['path']) ) {                
-                
+            
+            /** 
+             * Check image availability
+             */
+            if($this->shouldImageCreated($image)) {
                 if( $this->setClipCommand('http://'.$image['domain'], $image['path']) ) {
                     $this->setResizeCommand($image['path']);
                 }
@@ -43,6 +48,59 @@ class Previewer {
         }
     }
     
+    /**
+     * Checks if image will be create.
+     *
+     * True means that image does not exists or is overdue.
+     * False means that image exists or site for it is not available
+     * 
+     * @param array $image
+     * @return boolean
+     */
+    private function shouldImageCreated($image) {
+        
+        $result = true;
+
+        if(file_exists($image['path']) ) {
+
+            $ftime = filectime($image['path']);
+            
+            /**
+             * Can`t get file creation time OR file is overdue
+             */
+            if($ftime && (time()-$ftime) < $this->image_reload_time ) {
+                $result = false;
+            }
+        }
+        
+        /**
+         * If the file must be created or reloaded
+         * check is it possible
+         */
+        if($result) {
+            
+            if($ch = curl_init('http://'.$image['domain'])) {
+                curl_setopt($ch, CURLOPT_HEADER, true);
+                curl_setopt($ch, CURLOPT_NOBODY, true);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                $output = curl_exec($ch);
+                $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                /**
+                 * Server answer must be valid
+                 */
+                if(!$output || $httpcode<200 || $httpcode>=400) {
+                    $result = false;
+                }
+            }
+        }
+        
+        return $result;
+    }
+
+
     /**
      * Put new command into PhantomJS to create new site preview
      * 
