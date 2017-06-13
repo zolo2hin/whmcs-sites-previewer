@@ -12,6 +12,8 @@ page.viewportSize = {width: b_width, height: b_height};
 
 page.clipRect = {"width":c_width,"height":c_height,"top":0,"left":0};
 
+page.settings.resourceTimeout = 10000;
+
 page.open(address, function (status) {
     if (status !== 'success') { phantom.exit(1); }
     
