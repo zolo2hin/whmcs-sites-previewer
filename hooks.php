@@ -1,17 +1,26 @@
 <?php
 
-function check_services_var_in_template($vars) {
-    
-    if( isset($vars['services']) && !empty($vars['services']) ) {
-        
-        require_once dirname(dirname(dirname(__FILE__))).'/modules/addons/sites_previewer/Previewer.php';
-        
-        $previewer = new Previewer($vars['services']);
+add_hook('ClientAreaPage', 10, function($vars) {
+	if (empty($vars['services'])) {
+		return;
+	}
 
-        return ['services' => $previewer->flash_images()];
-    }
-}
+	require_once dirname(__FILE__) . '/Previewer.php';
+	$config = yaml_parse_file(dirname(__FILE__) . '/config.yaml');
+	$previewer = new Previewer(
+		$config['browser_size'],
+		$config['clip_size'],
+		$config['image_size'],
+		$config['image_reload_time']
+	);
 
-add_hook("ClientAreaPage", 10, "check_services_var_in_template");
+	$services = [];
+	foreach ($vars['services'] as $service) {
+		$service['preview'] = $previewer->getServiceImage($service);
+		$services[] = $service;
+	}
 
-
+	return [
+		'services' => $services
+	];
+});

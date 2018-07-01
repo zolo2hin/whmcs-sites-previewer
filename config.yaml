@@ -1,0 +1,10 @@
+browser_size:
+    - 1200
+    - 672
+clip_size:
+    - 1200
+    - 672
+image_size:
+    - 100
+    - 56
+image_reload_time: 604800
